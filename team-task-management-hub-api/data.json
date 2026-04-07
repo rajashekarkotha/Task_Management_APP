@@ -34,13 +34,6 @@
       "description": "Protect DELETE API with custom header authorization",
       "priority": "LOW",
       "status": "TODO"
-    },
-    {
-      "id": 10,
-      "title": "jkaskkj",
-      "description": "lklkjkjjk",
-      "priority": "MEDIUM",
-      "status": "IN_PROGRESS"
     }
   ]
 }
