@@ -8,7 +8,7 @@ import { addTaskList, updateTaskList } from "../state/TaskTrackingSlice";
 
 const TaskFormSchema = z.object({
   title: z.string().min(1, 'Title is required'),
-  description: z.string().optional(),
+  description: z.string().min(1, 'Description is required'),
   priority: z.enum(['LOW', 'MEDIUM', 'HIGH']),
   status: z.enum(['TODO', 'IN_PROGRESS', 'DONE'])
 });
@@ -37,13 +37,37 @@ const TaskForm = () => {
     status: 'TODO'
   });
 
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof TaskFormData, string>>
+  >({});
+
   const [loading, setLoading] = useState(false);
+
+  const validateForm = (): boolean => {
+    const result = TaskFormSchema.safeParse(formData);
+
+    if (!result.success) {
+      const fieldErrors: Partial<Record<keyof TaskFormData, string>> = {};
+
+      result.error.issues.forEach(issue => {
+        const field = issue.path[0] as keyof TaskFormData;
+        fieldErrors[field] = issue.message;
+      });
+
+      setErrors(fieldErrors);
+      return false;
+    }
+
+    setErrors({});
+    return true;
+  };
+
 
   useEffect(() => {
     if (isEditMode && existingTask) {
       setFormData({
         title: existingTask.title,
-        description: existingTask.description,
+        description: existingTask.description ?? '',
         priority: existingTask.priority,
         status: existingTask.status
       });
@@ -55,14 +79,26 @@ const TaskForm = () => {
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+
+    setErrors(prev => ({
+      ...prev,
+      [name]: undefined
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     setLoading(true);
 
     if (isEditMode && existingTask) {
@@ -80,8 +116,7 @@ const TaskForm = () => {
       dispatch(
         addTaskList({
           id: nextId,
-          ...formData,
-          status: 'TODO'
+          ...formData
         })
       );
     }
@@ -100,8 +135,13 @@ const TaskForm = () => {
           name="title"
           value={formData.title}
           onChange={handleChange}
-          className="form-control"
+          className={`form-control ${errors.title ? 'is-invalid' : ''}`}
         />
+
+        {errors.title && (
+          <div className="invalid-feedback">{errors.title}</div>
+        )}
+
       </div>
 
       <div className="form-group mb-2">
@@ -110,8 +150,11 @@ const TaskForm = () => {
           name="description"
           value={formData.description}
           onChange={handleChange}
-          className="form-control"
+          className={`form-control ${errors.description ? 'is-invalid' : ''}`}
         />
+        {errors.description && (
+          <div className="invalid-feedback">{errors.description}</div>
+        )}
       </div>
 
       <div className="form-group mb-4">
@@ -120,7 +163,7 @@ const TaskForm = () => {
           name="priority"
           value={formData.priority}
           onChange={handleChange}
-          className="form-control"
+          className={`form-control ${errors.priority ? 'is-invalid' : ''}`}
         >
           <option value="LOW">Low</option>
           <option value="MEDIUM">Medium</option>
@@ -128,21 +171,30 @@ const TaskForm = () => {
         </select>
       </div>
 
+      {errors.priority && (
+        <div className="invalid-feedback">{errors.priority}</div>
+      )
+      }
+
       {isEditMode && (
-  <div className="form-group mb-4">
-    <label>Status</label>
-    <select
-      name="status"              
-      value={formData.status}
-      onChange={handleChange}
-      className="form-control"
-    >
-      <option value="TODO">TODO</option>
-      <option value="IN_PROGRESS">IN_PROGRESS</option>
-      <option value="DONE">DONE</option>
-    </select>
-  </div>
-)}
+        <div className="form-group mb-4">
+          <label>Status</label>
+          <select
+            name="status"
+            value={formData.status}
+            onChange={handleChange}
+            className={`form-control ${errors.status ? 'is-invalid' : ''}`}
+          >
+            <option value="TODO">TODO</option>
+            <option value="IN_PROGRESS">IN_PROGRESS</option>
+            <option value="DONE">DONE</option>
+          </select>
+
+          {errors.status && (
+            <div className="invalid-feedback">{errors.status}</div>
+          )}
+        </div>
+      )}
 
       <Button type="submit" disabled={loading}>
         {loading
