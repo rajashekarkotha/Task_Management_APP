@@ -1,0 +1,46 @@
+{
+  "taskListSummary": [
+    {
+      "id": 1,
+      "title": "Design task dashboard UI",
+      "description": "Create wireframes and basic layout for the task dashboard",
+      "priority": "MEDIUM",
+      "status": "TODO"
+    },
+    {
+      "id": 2,
+      "title": "Implement task creation API",
+      "description": "Build REST API endpoint to create tasks with validation",
+      "priority": "HIGH",
+      "status": "DONE"
+    },
+    {
+      "id": 3,
+      "title": "Add search functionality",
+      "description": "Enable searching tasks by title with optimized filtering",
+      "priority": "MEDIUM",
+      "status": "TODO"
+    },
+    {
+      "id": 4,
+      "title": "Setup global state management",
+      "description": "Configure Zustand store for managing tasks globally",
+      "priority": "MEDIUM",
+      "status": "IN_PROGRESS"
+    },
+    {
+      "id": 5,
+      "title": "Secure delete task operation",
+      "description": "Protect DELETE API with custom header authorization",
+      "priority": "LOW",
+      "status": "TODO"
+    },
+    {
+      "id": 10,
+      "title": "jkaskkj",
+      "description": "lklkjkjjk",
+      "priority": "MEDIUM",
+      "status": "IN_PROGRESS"
+    }
+  ]
+}
